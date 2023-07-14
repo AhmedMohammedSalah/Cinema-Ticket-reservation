@@ -20,6 +20,8 @@ from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 router =DefaultRouter()
 router.register ('guests',views.Viewsets_guest)
+router.register ('movies',views.Viewsets_movies)
+router.register ('reservations',views.Viewsets_reservation)
 urlpatterns = [
     # 1 
     path('jsonresponsenomodel/',views.no_rest_no_model),
@@ -45,5 +47,10 @@ urlpatterns = [
     path('rest/generics/<pk>/',views.Generics_pk.as_view()),
     # Viewsets
     path('rest/viewsets/',include(router.urls)),
+    # Find Movie 
+    path('fbv/findmovie/',views.find_movie),
+    # new Reservation
+    path('fbv/newreservation/',views.new_reservation),
+    
     
 ]

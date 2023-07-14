@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http.response import JsonResponse 
 from rest_framework.response import Response
-# Create your views here.
 from .models import Guest,Movie,Reservation
 from rest_framework.decorators import api_view
-from .serializers import GuestSerializer ,MovieSerializer,Reservation
+from .serializers import GuestSerializer ,MovieSerializer,ReservationSerializer
 from rest_framework import status,filters
+from rest_framework.views import APIView
 #1 without Rest Framework FBV 
 def no_rest_no_model(request):
     guests=[
@@ -78,7 +78,7 @@ def fbv_pk (request,pk):
         guest.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 # 4 CBV Class Based View
-from rest_framework.views import APIView
+
 # 4.1 GET POST 
 class CBV_list(APIView):
     def get(self,request):
@@ -145,8 +145,7 @@ class Mixins_pk(mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.Destroy
         return self.update(request)
     def delete(self ,request,pk):
         return self.destroy(request)
-'''
-    Generics
+'''Generics
 '''
 class Generics_list(generics.ListCreateAPIView):
     queryset = Guest.objects.all()
@@ -168,8 +167,48 @@ from rest_framework import viewsets
 class Viewsets_guest(viewsets.ModelViewSet):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
+    filter_backend=[filters.SearchFilter]
+    search_fields=["name"]
+
+
+
+class Viewsets_movies(viewsets.ModelViewSet):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    filter_backend=[filters.SearchFilter]
+    search_fields=["movie_name"]
+
+class Viewsets_reservation(viewsets.ModelViewSet):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+    filter_backend=[filters.SearchFilter]
+
+#FBV to make Reservation 
+#find movie (Search)
+@api_view(['GET'])
+def find_movie(request):
+    movies=Movie.objects.filter(
+        movie_name= request.data['movie_name'],
+        hall= request.data['hall'],
+    )
+    serializer = MovieSerializer(movies,many=True)
+    return Response(serializer.data)
     
-    
-    
-    
+@api_view(['POST'])
+def new_reservation (request):
+    movie=Movie.objects.get(
+        movie_name= request.data['movie_name'],
+        hall= request.data['hall'],
+    )
+    # guest_id= request.user.id
+    guest =Guest()
+    guest.name= request.data['name']
+    guest.phone=request.data['phone']
+    guest.save()
+    reservation=Reservation()
+    reservation.guest=guest
+    reservation.movie=movie
+    reservation.save()
+    serializer = ReservationSerializer(reservation)
+    return Response(serializer.data,status=status.HTTP_201_CREATED)
     
