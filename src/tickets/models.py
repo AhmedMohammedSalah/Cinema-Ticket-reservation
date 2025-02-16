@@ -23,7 +23,7 @@ class Reservation (models.Model):
     guest =models.ForeignKey(Guest, related_name="reservation", on_delete=models.CASCADE)
     movie =models.ForeignKey(Movie, related_name="reservation", on_delete=models.CASCADE)
     def __str__(self):
-        return self.guest.name ,self.movie.movie_name
+        return self.guest.name +"  :  "+self.movie.movie_name+"  @T  "+str(self.movie.date)
     
     
 

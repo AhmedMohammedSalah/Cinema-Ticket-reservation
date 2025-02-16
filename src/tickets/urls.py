@@ -36,7 +36,6 @@ urlpatterns = [
     path('rest/cbv/',views.CBV_list.as_view()),
     # 
     path('rest/cbv/<pk>/',views.CBV_pk.as_view()),
-     
     # Mixins 
     path('rest/mixins/',views.Mixins_list.as_view()),
     # 
@@ -48,9 +47,12 @@ urlpatterns = [
     # Viewsets
     path('rest/viewsets/',include(router.urls)),
     # Find Movie 
-    path('fbv/findmovie/',views.find_movie),
+    path('fbv/findmovie/',views.find_movie), 
     # new Reservation
     path('fbv/newreservation/',views.new_reservation),
+    # 10 Rest url     
+    path('api-auth',include("rest_framework.urls")),
+
     
     
 ]
